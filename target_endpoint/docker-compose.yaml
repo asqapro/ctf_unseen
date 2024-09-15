@@ -1,0 +1,31 @@
+include:
+  - ../wazuh-docker/single-node/docker-compose.yml
+  - ../CTFd/docker-compose.yml
+
+services:
+  web:
+    image: nginx
+    ports:
+      - 8001:80
+    volumes:
+      - ./src:/usr/share/nginx/html
+  network_monitor:
+    image: jasonish/suricata:7.0.3
+    #network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    volumes: 
+      - ./logs:/var/log/suricata
+      - ./etc:/etc/suricata
+    environment:
+      - SURICATA_OPTIONS=-i eth0
+  wazuh.agent:
+    build:
+      context: ./wazuh_agent/
+      dockerfile: Dockerfile
+    depends_on:
+      - wazuh.manager
+    volumes:
+      - ./logs:/var/log/suricata:ro

@@ -1,0 +1,9 @@
+[submodule "CTFd"]
+	path = CTFd
+	url = https://github.com/CTFd/CTFd
+[submodule "GoldenEye"]
+	path = GoldenEye
+	url = https://github.com/jseidl/GoldenEye
+[submodule "wazuh-docker"]
+	path = wazuh-docker
+	url = https://github.com/wazuh/wazuh-docker
