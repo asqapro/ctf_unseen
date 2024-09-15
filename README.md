@@ -1,0 +1,1 @@
+CTF where participants have to avoid detection. Suricata and Wazuh watch hosts for intrusions.
