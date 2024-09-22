@@ -9,6 +9,7 @@ RUN apt-get update && apt-get -y install curl gpg procps && \
     apt-get update && \
     apt-get -y install wazuh-agent=4.7.2-1 && \
     sed -i "s/MANAGER_IP/wazuh.manager/" /var/ossec/etc/ossec.conf && \
+    echo -e "<ossec_config>\n  <localfile>\n    <log_format>json</log_format>\n    <location>/var/log/suricata/eve.json</location>\n  </localfile>\n</ossec_config>\n" >> /var/ossec/etc/ossec.conf && \
     echo "wazuh-agent hold" | dpkg --set-selections && \
     rm -rf /var/lib/apt/lists/* && \
     chmod +x /entrypoint.sh

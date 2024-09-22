@@ -2151,6 +2151,7 @@ default-rule-path: /var/lib/suricata/rules
 
 rule-files:
   - suricata.rules
+  - /etc/suricata/rules/local.rules
 
 ##
 ## Auxiliary configuration files.

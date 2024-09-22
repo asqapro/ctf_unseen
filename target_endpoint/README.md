@@ -1,18 +1,13 @@
-Perform the following BEFORE starting Suricata for the first time:
+The following configuration is already done, but if the Suricata volumes get wiped for any reason, follow these steps to set things back up.
+(These steps are poorly written, clarify them later)
 
-(Note that this is NOT in the root directory, it should be run in the local directory)
-mkdir ./etc
-wget https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
-tar zxvf emerging.rules.tar.gz -C ./etc/
-rm emerging.rules.tar.gz
+Re-create custom rules:
+- mkdir ./etc/rules/
+- touch ./etc/rules/local.rules
+Edit ./etc/rules/local.rules and add rules.
+Edit ./etc/suricata.yaml and add the following line to the "rule-files" section (dash included):
+\- /etc/suricata/rules/local.rules
 
-
-
-Perform the following AFTER starting Suricata for the first time:
-
-docker exec -it --user suricata <container_name> suricata-update -f
-
-
-Perform the following after starting the Wazuh server to label the Suricata container in Wazuh:
-
-docker exec -i ctf_unseen-wazuh.manager-1 bash < suricata_register.sh
+Create suricata rules file:
+- mkdir ./lib/rules
+- touch ./lib/rules/suricata.rules

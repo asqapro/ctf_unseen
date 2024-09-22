@@ -18,8 +18,11 @@ services:
     volumes: 
       - ./logs:/var/log/suricata
       - ./etc:/etc/suricata
+      - ./lib:/var/lib/suricata
     environment:
-      - SURICATA_OPTIONS=-i eth0
+      SURICATA_OPTIONS: "-i eth0"
+      PUID: ${PUID}
+      PGID: ${PGID}
     network_mode: service:web
   wazuh.agent:
     build:
@@ -29,3 +32,8 @@ services:
       - wazuh.manager
     volumes:
       - ./logs:/var/log/suricata:ro
+  attacker:
+    image: alpine
+    command: sh
+    tty: true
+    stdin_open: true
