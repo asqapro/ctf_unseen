@@ -1,1 +1,2 @@
-target_endpoint/logs/
+target_endpoint/suricata/logs/
+target_endpoint/evebox/

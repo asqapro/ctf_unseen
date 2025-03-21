@@ -1,39 +1,62 @@
-include:
-  - ../wazuh-docker/single-node/docker-compose.yml
+#include:
+#  - ../wazuh-docker/single-node/docker-compose.yml
 #  - ../CTFd/docker-compose.yml
 
 services:
   web:
     image: nginx
+    container_name: web
     ports:
       - 8001:80
     volumes:
-      - ./src:/usr/share/nginx/html
-  network_monitor:
-    image: jasonish/suricata:7.0.3
+      - ./web/src:/usr/share/nginx/html
+
+  suricata:
+    image: jasonish/suricata:7.0
+    container_name: suricata
     cap_add:
       - NET_ADMIN
       - NET_RAW
       - SYS_NICE
     volumes: 
-      - ./logs:/var/log/suricata
-      - ./etc:/etc/suricata
-      - ./lib:/var/lib/suricata
+      - ./suricata/logs:/var/log/suricata
+      - ./suricata/etc:/etc/suricata
+      - ./suricata/lib:/var/lib/suricata
+      - ./suricata/test.sh:/test.sh:ro
     environment:
-      SURICATA_OPTIONS: "-i eth0"
+      SURICATA_OPTIONS: "-q 0"
       PUID: ${PUID}
       PGID: ${PGID}
+    entrypoint: /test.sh
+    #post_start:
+    #  - command: "bash -c 'dnf -y install iptables-nft; iptables-nft -I INPUT -j NFQUEUE; iptables-nft -I OUTPUT -j NFQUEUE'"
+    #    user: root
     network_mode: service:web
-  wazuh.agent:
-    build:
-      context: ./wazuh_agent/
-      dockerfile: Dockerfile
-    depends_on:
-      - wazuh.manager
+  evebox:
+    image: jasonish/evebox:latest
+    container_name: evebox
     volumes:
-      - ./logs:/var/log/suricata:ro
+      - ./suricata/logs/eve.json:/var/log/suricata/eve.json:ro
+      - ./evebox:/var/lib/evebox
+    ports:
+      - "5636:5636"
+    environment:
+      EVEBOX_HTTP_TLS_ENABLED: false
+    command: ["--sqlite", "/var/log/suricata/eve.json"]
+    restart: unless-stopped
+    depends_on:
+      - suricata
+  #wazuh.agent:
+  #  build:
+  #    context: ./wazuh_agent/
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - wazuh.manager
+  #  volumes:
+  #    - ./logs:/var/log/suricata:ro
   attacker:
     image: alpine
+    container_name: attacker
     command: sh
     tty: true
     stdin_open: true

@@ -47,3 +47,8 @@ alert tcp any ![21,22,23,25,53,80,88,110,135,137,138,139,143,161,389,443,445,465
 
 # UDP destination port: 4444
 alert udp any ![53,67,68,69,123,161,162,389,520,1026,1027,1028,1029,1194,1434,1900,11211,12345,27017,51820] -> any 4444 (msg:"POSSBL SCAN SHELL M-SPLOIT UDP"; classtype:trojan-activity; sid:3400021; priority:1; rev:2;)
+
+
+# HTTP brute force
+alert http any any -> any any (msg:"Potential directory brute-force attempt"; content:"/admin"; http_uri; threshold:type threshold, track by_src, count 5, seconds 10; sid:1000001;)
+drop http any any -> any any (msg:"Potential directory brute-force attempt"; content:"/admin"; http_uri; threshold:type threshold, track by_src, count 5, seconds 10; sid:1000002;)
